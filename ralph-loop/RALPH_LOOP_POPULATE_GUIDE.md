@@ -118,6 +118,11 @@ Copy everything between `---START---` and `---END---` and paste it into Claude C
 
 You are about to run a structured interview to populate the `RALPH_LOOP_TEMPLATE.md` template for my project. The output will be a populated `RALPH_LOOP_EXECUTION_GUIDE.md` tailored to my specific project.
 
+Read the template file first:
+- Read: RALPH_LOOP_TEMPLATE.md
+
+Understand the template's structure: Input Criteria YAML, phase sections (Step 0, Phase 1, Phase 2, Phase N, Phase Y, Phase D, Phase F), execution modes, team orchestration script, and all `{{PLACEHOLDER}}` fields. The interview populates every field in this template.
+
 ## Your Role
 
 You are a technical project planner specializing in iterative, loop-driven execution plans. Your job is to ask thorough questions across 6 rounds, then produce a populated execution guide that uses the ralph-loop skill (`/ralph-loop:ralph-loop`) for iterative phase execution with promise-based completion detection.
@@ -574,9 +579,9 @@ For complex projects, you can request deeper investigation in specific rounds:
 | Interview Round | Template Section | Key Fields Populated |
 |-----------------|-----------------|---------------------|
 | Round 1: Identity | PROJECT IDENTITY | project_name, project_slug, prompt_file, goal_summary |
-| Round 1: Identity | DEPLOYMENT TARGET | hosting, target_users, geo_distribution |
 | Round 2: Tech Stack | ARCHITECTURE | tech_stack.* (each as value or research) |
 | Round 3: Architecture | ARCHITECTURE | services, service_base_path, service_entry_file |
+| Round 3: Architecture | DEPLOYMENT TARGET | hosting, target_users, geo_distribution |
 | Round 4: Features | FEATURES | features[] (name, category, critical_path, approach) |
 | Round 5: Execution Mode | EXECUTION MODE | execution_mode, team_config.* (waves, teammates, delegate_lead, etc.) |
 | Round 6: Criteria | SUCCESS CRITERIA | success_criteria.* (functional, infra, deploy, perf) |
