@@ -329,15 +329,15 @@ Project Root/
               │  = Populated Execution Guide │
               └──────────────┬───────────────┘
                              │
-              ┌──────────────┼──────────────────────┐
-              │              │                      │
-              ▼              ▼                      ▼
-   ┌─────────────────┐  ┌──────────┐  ┌───────────────────────────┐
-   │ task_plan.md     │  │findings.md│  │ AGENT_TEAM_EXECUTION_     │
-   │ (phases as tasks │  │(decisions │  │ GUIDE.md                  │
-   │  pending/done)   │  │ + open Qs)│  │ (the actual commands to   │
-   └─────────────────┘  └──────────┘  │  run each phase)           │
-                                       └───────────────────────────┘
+              ┌──────────────┴──────────────────────┐
+              │                                     │
+              ▼                                     ▼
+   ┌──────────────────────┐          ┌───────────────────────────┐
+   │ Planning files:       │          │ AGENT_TEAM_EXECUTION_     │
+   │  task_plan.md         │          │ GUIDE.md                  │
+   │  findings.md          │          │ + agent_team_input_       │
+   │  progress.md          │          │   criteria.yaml           │
+   └──────────────────────┘          └───────────────────────────┘
 ```
 
 ### How Planning Files Flow Through Execution
