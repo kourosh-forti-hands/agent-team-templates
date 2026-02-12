@@ -74,14 +74,21 @@ These files are the durable state layer that survives across context windows. If
 
 The template references several MCP servers for research, code analysis, and memory. **None are strictly required** — the interview and execution will adapt based on what's available.
 
-| MCP Server | What it provides | Used for | Setup |
-|------------|-----------------|----------|-------|
-| **Memory** (`mcp__memory__*`) | Persistent knowledge graph | Storing `Decision_` entities across phases and sessions. Resolved research → concrete values. | [memory-mcp-server](https://github.com/modelcontextprotocol/servers/tree/main/src/memory) |
-| **Serena** (`mcp__serena__*`) | Semantic code analysis | Symbol-level code reading/editing, codebase overview, pattern search | [serena](https://github.com/oramasearch/serena) |
-| **Brave Search** (`mcp__brave-search__*`) | Web search | Technology research in Phase 1, finding docs/examples | [brave-search-mcp](https://github.com/anthropics/anthropic-cookbook/tree/main/misc/brave_search_mcp) |
-| **PAL** (`mcp__pal__*`) | Multi-model AI analysis | Deep thinking, code review, consensus, API lookup | [pal-mcp](https://github.com/your-pal/pal) |
-| **Octagon** (`mcp__octagon-deep-research-mcp__*`) | Deep research agent | Extended research for complex technology decisions | [octagon](https://octagon.ai) |
-| **Fetch** (`mcp__fetch__*`) | HTTP requests | Testing API endpoints, health checks | [fetch-mcp-server](https://github.com/modelcontextprotocol/servers/tree/main/src/fetch) |
+| MCP Server | What it provides | Used for |
+|------------|-----------------|----------|
+| **Memory** (`mcp__memory__*`) | Persistent knowledge graph | Storing `Decision_` entities across phases and sessions. Resolved research → concrete values. |
+| **Serena** (`mcp__serena__*`) | Semantic code analysis | Symbol-level code reading/editing, codebase overview, pattern search |
+| **Brave Search** (`mcp__brave-search__*`) | Web search | Technology research in Phase 1, finding docs/examples |
+| **PAL** (`mcp__pal__*`) | Multi-model AI analysis | Deep thinking, code review, consensus, API lookup |
+| **Octagon** (`mcp__octagon-deep-research-mcp__*`) | Deep research agent | Extended research for complex technology decisions |
+| **Fetch** (`mcp__fetch__*`) | HTTP requests | Testing API endpoints, health checks |
+
+**To configure MCP servers**, use `claude mcp add` or edit `.claude/settings.json`. Each MCP server has its own installation instructions — check the server's documentation for the correct `claude mcp add` command or npm package name.
+
+```bash
+# Example: add Memory MCP server
+claude mcp add memory npx -y @modelcontextprotocol/server-memory
+```
 
 **If you have NONE of these:** The template still works. Research steps will use `WebSearch` instead of Brave/Octagon. Code analysis will use Grep/Read instead of Serena. You lose cross-session Memory persistence but planning files still carry state between phases.
 
@@ -369,3 +376,208 @@ After each ralph-loop completes:
 ```
 
 Then diagnose with progress.md and Memory state before re-running with an adjusted prompt.
+
+---
+
+## What the Interview Produces
+
+After the 6-round interview, Claude Code generates these artifacts:
+
+```
+Project Root/
+├── RALPH_LOOP_EXECUTION_GUIDE.md     # The populated execution guide (main artifact)
+├── task_plan.md                       # Phase breakdown with status tracking
+├── findings.md                        # Interview decisions + research questions
+└── progress.md                        # Interview completion record
+```
+
+### Artifact Relationships
+
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│                        INTERVIEW (6 rounds)                              │
+│                                                                          │
+│  Round 1: Identity ──→ Round 2: Tech ──→ Round 3: Architecture           │
+│  Round 4: Features ──→ Round 5: Execution Mode ──→ Round 6: Criteria     │
+│                                                                          │
+│  Every answer feeds into ──┐                                             │
+└────────────────────────────┼─────────────────────────────────────────────┘
+                             │
+                             ▼
+              ┌──────────────────────────────┐
+              │  RALPH_LOOP_TEMPLATE.md      │ (read-only template)
+              │  + Interview Answers         │
+              │  = Populated Execution Guide │
+              └──────────────┬───────────────┘
+                             │
+              ┌──────────────┼──────────────────────┐
+              │              │                      │
+              ▼              ▼                      ▼
+   ┌─────────────────┐  ┌──────────┐  ┌───────────────────────────┐
+   │ task_plan.md     │  │findings.md│  │ RALPH_LOOP_EXECUTION_     │
+   │ (phases as tasks │  │(decisions │  │ GUIDE.md                  │
+   │  pending/done)   │  │ + open Qs)│  │ (the ralph-loop commands  │
+   └─────────────────┘  └──────────┘  │  to run each phase)        │
+                                       └───────────────────────────┘
+```
+
+### How Planning Files Flow Through Execution
+
+```
+INTERVIEW PHASE                           EXECUTION PHASE
+═══════════════                           ═══════════════
+
+findings.md ◄── Interview decisions       findings.md ◄── Gap analysis, research results,
+                                                          architecture notes, promise outcomes
+
+task_plan.md ◄── Phase list (all pending) task_plan.md ◄── Phase status updated per-phase
+                                                           (pending → in_progress → complete)
+
+progress.md ◄── "Interview complete,      progress.md ◄── Per-phase action log, test results,
+                 guide generated"                          iteration counts, checkpoint records
+```
+
+**Important:** Step 0 Bootstrap in the execution guide re-initializes the planning files
+for the actual build. The interview-phase planning files serve as input/reference only.
+
+---
+
+## Example: What a Populated Round Looks Like
+
+Here's what Round 5 might look like in practice (this round is unique to the ralph-loop model):
+
+```
+Claude Code:  Round 5 is about execution mode and loop configuration.
+              Based on your answers so far:
+              - 3 features (messaging, voice, file uploads)
+              - Voice is on the critical path
+              - Messaging and file uploads are independent of each other
+              - 2 research fields to resolve in Phase 1
+
+              Let me recommend an execution mode.
+
+[AskUserQuestion]
+  Question: "Which execution mode fits this project?"
+  Header: "Exec mode"
+  Options:
+    - "Sequential (Recommended) — 3 features is manageable one-at-a-time,
+       and the critical path feature (voice) benefits from your review
+       between phases"
+    - "Hybrid — Run voice sequentially, then messaging + file uploads
+       in parallel as a team wave"
+    - "Team — All feature phases run as parallel teammates"
+    - (Other)
+
+User: "Hybrid — I want to review voice results before the others start"
+
+Claude Code:  Good choice. For hybrid mode, here's the wave structure
+              I'd propose:
+
+              Wave 0 (solo): Step 0 Bootstrap
+              Wave 1 (solo): Phase 1 Assessment (resolves 2 research fields)
+              Wave 2 (solo): Phase 2 Foundation (APIs, auth, data layer)
+              Wave 3 (solo): Phase 3 Voice Communication (critical path —
+                             you review before proceeding)
+              Wave 4 (parallel): Phase 4 Messaging + Phase 5 File Uploads
+              Wave 5 (solo): Phase Y Client Integration
+              Wave 6 (solo): Phase D Deployment + Phase F Validation
+
+              Does this wave grouping look right?
+
+User: "Yes, but put deployment and client integration in the same wave"
+
+Claude Code:  Updated. Now for iteration budgets — with 2 research fields,
+              Phase 1 needs more room.
+
+[AskUserQuestion]
+  Question: "Iteration budget preference?"
+  Header: "Budget"
+  Options:
+    - "Conservative — Lower iterations, may need re-runs if phases
+       don't complete"
+    - "Generous (Recommended) — Higher iterations, more tokens but
+       fewer manual re-runs"
+    - "Let me set each phase manually"
+    - (Other)
+
+User: "Generous"
+
+Claude Code:  Here's the iteration table I'll use:
+
+              Phase 1 Assessment:    18 iterations (2 research fields)
+              Phase 2 Foundation:    22 iterations
+              Phase 3 Voice (crit):  25 iterations
+              Phase 4 Messaging:     15 iterations
+              Phase 5 File Uploads:  12 iterations
+              Phase Y Client:        18 iterations
+              Phase D Deployment:    18 iterations
+              Phase F Validation:    22 iterations
+
+              Promise names will be designed in Round 6.
+```
+
+---
+
+## Customizing the Interview
+
+### Adding Rounds
+
+If your project has domain-specific concerns not covered by the 6 default rounds, add them to the kickoff prompt:
+
+```
+### Round 7: [Your Domain]
+**Goal:** [What this round determines]
+
+Ask about:
+- [Question 1]
+- [Question 2]
+- ...
+```
+
+### Skipping Rounds
+
+If you already have a fully specified project (all concrete values, no research needed), you can skip rounds by pre-filling answers in the kickoff prompt:
+
+```
+## Pre-filled Answers (skip these questions)
+
+- Project name: "Voice Chat"
+- Tech stack: all concrete (FastAPI, Python, React, PostgreSQL, Redis, Docker Compose, Electron)
+- Services: auth, user, server, channel, message, file, webrtc, websocket
+- Execution mode: sequential (no teams)
+
+## Start the interview at Round 4 (Features)
+```
+
+### Deepening Rounds
+
+For complex projects, you can request deeper investigation in specific rounds:
+
+```
+## Deep Dive Requests
+
+- Round 2 (Tech Stack): For every research field, I want you to do preliminary
+  web research DURING the interview (not just in Phase 1) so I can make a more
+  informed choice. Use Brave search + PAL thinkdeep before presenting options.
+
+- Round 5 (Execution Mode): Show me concrete token cost estimates for each
+  execution mode based on my feature count and wave structure.
+
+- Round 6 (Promises): For the critical path feature, show me 3 alternative
+  promise designs with different granularity levels.
+```
+
+---
+
+## Quick Reference: Interview → Template Field Mapping
+
+| Interview Round | Template Section | Key Fields Populated |
+|-----------------|-----------------|---------------------|
+| Round 1: Identity | PROJECT IDENTITY | project_name, project_slug, prompt_file, goal_summary |
+| Round 1: Identity | DEPLOYMENT TARGET | hosting, target_users, geo_distribution |
+| Round 2: Tech Stack | ARCHITECTURE | tech_stack.* (each as value or research) |
+| Round 3: Architecture | ARCHITECTURE | services, service_base_path, service_entry_file |
+| Round 4: Features | FEATURES | features[] (name, category, critical_path, approach) |
+| Round 5: Execution Mode | EXECUTION MODE | execution_mode, team_config.* (waves, teammates, delegate_lead, etc.) |
+| Round 6: Criteria | SUCCESS CRITERIA | success_criteria.* (functional, infra, deploy, perf) |
+| Round 6: Criteria | Phase sections | Promise names and done criteria for each phase |

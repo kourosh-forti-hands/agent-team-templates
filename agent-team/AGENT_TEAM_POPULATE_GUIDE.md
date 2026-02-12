@@ -21,7 +21,7 @@
 
 ### Files You Need
 
-Download both of these files from the Gist and place them in your **project root directory** (the same directory you open Claude Code from):
+Download both of these files and place them in your **project root directory** (the same directory you open Claude Code from):
 
 | File | What it is | Required |
 |------|-----------|----------|
@@ -30,8 +30,8 @@ Download both of these files from the Gist and place them in your **project root
 
 ```
 your-project/
-├── AGENT_TEAM_TEMPLATE.md          ← download from Gist
-├── AGENT_TEAM_POPULATE_GUIDE.md    ← download from Gist (this file)
+├── AGENT_TEAM_TEMPLATE.md          ← download
+├── AGENT_TEAM_POPULATE_GUIDE.md    ← download (this file)
 ├── src/                            ← your existing code (if any)
 └── ...
 ```
@@ -60,22 +60,21 @@ If you only plan to use the **solo** topology (no teams, sequential execution), 
 
 The template references several MCP servers for research, code analysis, and memory. **None are strictly required** — the interview and execution will adapt based on what's available. But each one you add expands what the populated guide can do.
 
-| MCP Server | What it provides | Used for | Setup |
-|------------|-----------------|----------|-------|
-| **Memory** (`mcp__memory__*`) | Persistent key-value knowledge graph | Storing Decision_ entities across phases and sessions. Cross-teammate state sharing. | [memory-mcp-server](https://github.com/modelcontextprotocol/servers/tree/main/src/memory) |
-| **Serena** (`mcp__serena__*`) | Semantic code analysis | Symbol-level code reading/editing, codebase overview, pattern search | [serena](https://github.com/oramasearch/serena) |
-| **Brave Search** (`mcp__brave-search__*`) | Web search | Technology research in Phase 1, finding docs/examples | [brave-search-mcp](https://github.com/anthropics/anthropic-cookbook/tree/main/misc/brave_search_mcp) |
-| **PAL** (`mcp__pal__*`) | Multi-model AI analysis | Deep thinking, code review, consensus, API lookup | [pal-mcp](https://github.com/your-pal/pal) |
-| **Octagon** (`mcp__octagon-deep-research-mcp__*`) | Deep research agent | Extended research for complex technology decisions | [octagon](https://octagon.ai) |
-| **Fetch** (`mcp__fetch__*`) | HTTP requests | Testing API endpoints, health checks | [fetch-mcp-server](https://github.com/modelcontextprotocol/servers/tree/main/src/fetch) |
+| MCP Server | What it provides | Used for |
+|------------|-----------------|----------|
+| **Memory** (`mcp__memory__*`) | Persistent key-value knowledge graph | Storing Decision_ entities across phases and sessions. Cross-teammate state sharing. |
+| **Serena** (`mcp__serena__*`) | Semantic code analysis | Symbol-level code reading/editing, codebase overview, pattern search |
+| **Brave Search** (`mcp__brave-search__*`) | Web search | Technology research in Phase 1, finding docs/examples |
+| **PAL** (`mcp__pal__*`) | Multi-model AI analysis | Deep thinking, code review, consensus, API lookup |
+| **Octagon** (`mcp__octagon-deep-research-mcp__*`) | Deep research agent | Extended research for complex technology decisions |
+| **Fetch** (`mcp__fetch__*`) | HTTP requests | Testing API endpoints, health checks |
 
-**To configure MCP servers**, add them to your Claude Code settings:
+**To configure MCP servers**, use `claude mcp add` or edit `.claude/settings.json` in your project (or `~/.claude/settings.json` globally). Each MCP server has its own installation instructions — check the server's documentation for the correct `claude mcp add` command or npm package name.
+
 ```bash
 # Example: add Memory MCP server
 claude mcp add memory npx -y @modelcontextprotocol/server-memory
 ```
-
-Or edit `.claude/settings.json` in your project (or `~/.claude/settings.json` globally).
 
 **If you have NONE of these:** The template still works. The interview will populate fields the same way. During execution, phases that reference unavailable MCP tools will use Claude Code's built-in tools (Grep, Glob, Read, WebSearch, etc.) as fallbacks. Research steps will use `WebSearch` instead of Brave/Octagon. Code analysis will use Grep/Read instead of Serena. You lose cross-session Memory persistence but planning files (task_plan.md, findings.md, progress.md) still carry state.
 

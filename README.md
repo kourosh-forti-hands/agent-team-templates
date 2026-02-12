@@ -67,7 +67,7 @@ Both models share these ideas:
 - **Research as input** — Any field accepts `research: "..."` to defer decisions to Phase 1
 - **Memory MCP** — `Decision_` entities store resolved research across sessions
 - **Agent selection** — Both templates include guides for choosing specialized subagent types
-- **Phased execution** — Bootstrap → Assessment → Foundation → Features → Deployment → Validation
+- **Phased execution** — Bootstrap → Assessment → Foundation → Features → Client Integration (optional) → Deployment → Validation
 
 ## License
 

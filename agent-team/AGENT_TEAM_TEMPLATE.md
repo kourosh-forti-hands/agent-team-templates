@@ -28,7 +28,7 @@ the Agent Team model treats **teams, tasks, and messages** as first-class execut
 │  Teams bolted on optionally      │  Teams ARE the execution model       │
 │  One context window, one thread  │  N context windows, N threads        │
 │  /ralph-loop:ralph-loop "..."    │  TeamCreate → TaskCreate → Task(...)│
-│  /cancel-ralph to abort          │  SendMessage(shutdown_request)       │
+│  /ralph-loop:cancel-ralph        │  SendMessage(shutdown_request)       │
 └──────────────────────────────────┴──────────────────────────────────────┘
 ```
 
@@ -490,7 +490,7 @@ In team-based execution, a phase is "done" when:
 | Loop detects tag and stops | Lead sees status change via TaskList |
 | Single agent, single signal | Teammate signals + lead verifies |
 | Max iterations as safety net | Lead can reopen tasks if unsatisfied |
-| `/cancel-ralph` to abort | `SendMessage(type="shutdown_request")` |
+| `/ralph-loop:cancel-ralph` to abort | `SendMessage(type="shutdown_request")` |
 
 ---
 

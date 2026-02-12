@@ -185,11 +185,6 @@ team_config:
       mode: "solo"
       phases: ["phaseF"]                         # Final validation is always sequential
 
-  # Quality gate hooks (optional)
-  hooks:
-    task_completed: true                         # Enforce review before marking phase done
-    teammate_idle: true                          # Send feedback if teammate stops prematurely
-
 # ╔══════════════════════════════════════════════════════════════╗
 # ║  SUCCESS CRITERIA (required)                                 ║
 # ╚══════════════════════════════════════════════════════════════╝
@@ -329,29 +324,6 @@ Total: serial execution of all phases             Wave 4: Phase D ║ Phase F-pr
    └─ Clean up team resources between waves (or at end)
 ```
 
-### Quality Gate Hooks
-
-When `hooks.task_completed: true`, add to `.claude/hooks.json`:
-
-```json
-{
-  "hooks": {
-    "TaskCompleted": [
-      {
-        "command": "bash -c 'echo \"Verify: tests pass, code reviewed, Memory checkpoint saved\"'",
-        "description": "Enforce quality gate before task completion"
-      }
-    ],
-    "TeammateIdle": [
-      {
-        "command": "bash -c 'echo \"Check: is the phase promise fulfilled?\"'",
-        "description": "Verify teammate finished completely before going idle"
-      }
-    ]
-  }
-}
-```
-
 ### When to Use Teams vs Sequential
 
 | Scenario | Recommended Mode | Why |
@@ -375,7 +347,7 @@ When `hooks.task_completed: true`, add to `.claude/hooks.json`:
 
 **Execution Mode**: {{EXECUTION_MODE}} {{IF_TEAM_MODE}}({{PARALLEL_WAVE_COUNT}} parallel waves, max {{MAX_CONCURRENT}} concurrent teammates){{/IF_TEAM_MODE}}
 
-**Control Flow**: {{IF_SEQUENTIAL}}After each ralph-loop completes (promise detected or max iterations), review output before starting the next phase.{{/IF_SEQUENTIAL}}{{IF_TEAM_MODE}}The team lead orchestrates waves of parallel teammates. Each teammate runs its own ralph-loop internally. Between waves, the lead verifies all promises, resolves conflicts, and proceeds to the next wave.{{/IF_TEAM_MODE}} Use `/cancel-ralph` if a loop stalls.
+**Control Flow**: {{IF_SEQUENTIAL}}After each ralph-loop completes (promise detected or max iterations), review output before starting the next phase.{{/IF_SEQUENTIAL}}{{IF_TEAM_MODE}}The team lead orchestrates waves of parallel teammates. Each teammate runs its own ralph-loop internally. Between waves, the lead verifies all promises, resolves conflicts, and proceeds to the next wave.{{/IF_TEAM_MODE}} Use `/ralph-loop:cancel-ralph` if a loop stalls.
 
 **Open Research**: {{COUNT}} fields require research resolution in Phase 1 before implementation can begin.
 
@@ -401,7 +373,6 @@ TASKS:
 8. mcp__memory__create_entities([{name: 'Project_{{PROJECT_SLUG}}_Start', entityType: 'milestone', observations: ['{{GOAL_SUMMARY}}', 'Target: {{HOSTING}}, {{TARGET_USERS}}, {{GEO_DISTRIBUTION}}', 'Open research questions: {{RESEARCH_FIELD_LIST}}', 'Execution mode: {{EXECUTION_MODE}}']}])
 {{IF_TEAM_MODE}}
 9. TEAM SETUP (only if execution_mode is 'team' or 'hybrid'):
-   - Verify CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS is enabled in settings
    - Store team config in Memory: mcp__memory__create_entities([{name: 'TeamConfig_{{PROJECT_SLUG}}', entityType: 'team_config', observations: ['team_name: {{TEAM_NAME}}', 'waves: {{WAVE_DEFINITIONS}}', 'delegate_lead: {{DELEGATE_LEAD}}', 'require_plan_approval: {{REQUIRE_PLAN_APPROVAL}}']}])
    - Note: TeamCreate is called at the start of each parallel wave, NOT here
 {{/IF_TEAM_MODE}}
@@ -456,7 +427,6 @@ PART B: CODEBASE GAP ANALYSIS (parallel with Part A where possible)
    {{IF_FRONTEND}}- mcp__serena__search_for_pattern('TODO|FIXME|mock|stub|placeholder') across {{FRONTEND_PATH}}/{{/IF_FRONTEND}}
    - mcp__serena__list_dir('{{SERVICE_BASE_PATH}}', recursive=True)
    - mcp__serena__get_symbols_overview() on every {{SERVICE_ENTRY_FILE}} in {{SERVICE_BASE_PATH}}/*/
-   - /skill-codex:codex exec 'Audit all services in {{SERVICE_BASE_PATH}}/ for implementation completeness.'
    - Document every gap found in findings.md
 
 2. ARCHITECTURE EVALUATION (PAL + Octagon):
@@ -1078,7 +1048,7 @@ If a teammate stops without completing its phase:
 ## Cancelling a Stalled Loop
 
 ```
-/cancel-ralph
+/ralph-loop:cancel-ralph
 ```
 
 Then diagnose with:
@@ -1331,9 +1301,6 @@ team_config:
     - wave: 4
       mode: "solo"
       phases: ["phaseF"]
-  hooks:
-    task_completed: true
-    teammate_idle: true
 ```
 
 **What happens:** Phase 1 resolves ~10 research questions before any implementation begins (assessment iterations 20-22). Wave 2 runs the 3 feature phases in parallel as separate teammates, each with their own context and file ownership. The critical-path CRDT phase could optionally use the competing hypotheses pattern (Yjs vs Automerge vs ShareDB) before the main implementation teammate starts. Every later phase reads `Decision_*` entities from Memory.
