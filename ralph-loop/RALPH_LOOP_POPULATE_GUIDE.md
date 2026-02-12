@@ -415,15 +415,15 @@ Project Root/
               │  = Populated Execution Guide │
               └──────────────┬───────────────┘
                              │
-              ┌──────────────┼──────────────────────┐
-              │              │                      │
-              ▼              ▼                      ▼
-   ┌─────────────────┐  ┌──────────┐  ┌───────────────────────────┐
-   │ task_plan.md     │  │findings.md│  │ RALPH_LOOP_EXECUTION_     │
-   │ (phases as tasks │  │(decisions │  │ GUIDE.md                  │
-   │  pending/done)   │  │ + open Qs)│  │ (the ralph-loop commands  │
-   └─────────────────┘  └──────────┘  │  to run each phase)        │
-                                       └───────────────────────────┘
+              ┌──────────────┴──────────────────────┐
+              │                                     │
+              ▼                                     ▼
+   ┌──────────────────────┐          ┌───────────────────────────┐
+   │ Planning files:       │          │ RALPH_LOOP_EXECUTION_     │
+   │  task_plan.md         │          │ GUIDE.md                  │
+   │  findings.md          │          │ (the ralph-loop commands  │
+   │  progress.md          │          │  to run each phase)       │
+   └──────────────────────┘          └───────────────────────────┘
 ```
 
 ### How Planning Files Flow Through Execution
