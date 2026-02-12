@@ -140,7 +140,6 @@ execution_mode: "sequential"                     # "sequential" | "team" | "hybr
 # Team configuration (only used when execution_mode is "team" or "hybrid")
 team_config:
   team_name: "{{PROJECT_SLUG}}-build"            # Team identifier
-  teammate_mode: "in-process"                    # "in-process" | "tmux" (split panes)
   delegate_lead: true                            # true = lead only coordinates, never implements
   require_plan_approval: true                    # Teammates must get plan approved before coding
   default_teammate_model: "sonnet"               # "sonnet" | "opus" | "haiku" per teammate
@@ -422,7 +421,7 @@ OPEN QUESTION: {{FIELD_NAME}}
 PART B: CODEBASE GAP ANALYSIS (parallel with Part A where possible)
 ====================================================================
 
-1. GAP ANALYSIS (Serena + Codex):
+1. GAP ANALYSIS (Serena):
    - mcp__serena__search_for_pattern('TODO|FIXME|mock|stub|placeholder|NotImplemented') across all {{SERVICE_BASE_PATH}}/
    {{IF_FRONTEND}}- mcp__serena__search_for_pattern('TODO|FIXME|mock|stub|placeholder') across {{FRONTEND_PATH}}/{{/IF_FRONTEND}}
    - mcp__serena__list_dir('{{SERVICE_BASE_PATH}}', recursive=True)
@@ -969,7 +968,7 @@ Output <promise>PRODUCTION_READY</promise> when ALL success criteria checkboxes 
 ```
 COMMAND                                              PROMISE                    MAX ITER
 ──────────────────────────────────────────────────────────────────────────────────────────
-Step 0: Bootstrap                                    BOOTSTRAP_COMPLETE         5
+Step 0: Bootstrap                                    BOOTSTRAP_COMPLETE         {{BOOTSTRAP_MAX_ITER}}
 Phase 1: Assessment + Technology Selection           ASSESSMENT_COMPLETE        {{ASSESSMENT_MAX_ITER}}
 Phase 2: {{PHASE_2_TITLE}}                           {{PHASE_2_PROMISE}}        {{PHASE_2_MAX_ITER}}
 {{BLOCK:PHASE_ROW}}
@@ -1140,7 +1139,7 @@ Teammate: {{TEAMMATE_NAME}} (Phase {{N}})
 | TDD for backend               | `backend-development:tdd-orchestrator`                    |
 | FastAPI implementation         | `python-development:fastapi-pro`                          |
 | Django implementation          | `python-development:django-pro`                           |
-| Express/Node.js backend        | `javascript-typescript:nodejs-backend-patterns`           |
+| Express/Node.js backend        | `javascript-typescript:javascript-pro`                    |
 | Go backend                     | `systems-programming:golang-pro`                          |
 | React/Next.js frontend         | `frontend-mobile-development:frontend-developer`          |
 | Mobile (RN/Flutter)            | `frontend-mobile-development:mobile-developer`            |
@@ -1148,7 +1147,7 @@ Teammate: {{TEAMMATE_NAME}} (Phase {{N}})
 | Backend API security           | `backend-api-security:backend-security-coder`             |
 | Frontend security              | `frontend-mobile-security:frontend-security-coder`        |
 | Database optimization          | `database-cloud-optimization:database-optimizer`          |
-| PostgreSQL schema design       | `database-design:postgresql`                              |
+| PostgreSQL schema design       | `database-design:sql-pro`                                 |
 | Performance/load testing       | `full-stack-orchestration:performance-engineer`           |
 | Deployment hardening           | `deployment-strategies:deployment-engineer`                |
 | Kubernetes architecture        | `kubernetes-operations:kubernetes-architect`               |
@@ -1167,7 +1166,7 @@ Teammate: {{TEAMMATE_NAME}} (Phase {{N}})
 | API/library lookup             | `mcp__pal__apilookup`                                      |
 | Web search                     | `mcp__brave-search__brave_web_search`                      |
 | **Team Orchestration**         |                                                            |
-| Team lead (coordinates only)   | Use delegate mode (Shift+Tab after team creation)          |
+| Team lead (coordinates only)   | Set `delegate_lead: true` in team config or use `mode='delegate'` in Task calls |
 | Feature teammate (writes code) | `general-purpose` with `team_name` parameter               |
 | Research teammate (read-only)  | `Explore` with `team_name` parameter                       |
 | Security review teammate       | `comprehensive-review:security-auditor` with `team_name`   |
@@ -1264,7 +1263,6 @@ success_criteria:
 execution_mode: "team"
 team_config:
   team_name: "collab-docs-build"
-  teammate_mode: "in-process"
   delegate_lead: true
   require_plan_approval: true
   default_teammate_model: "sonnet"

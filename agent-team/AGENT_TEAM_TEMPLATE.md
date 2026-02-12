@@ -1500,7 +1500,7 @@ Teammate: {{TEAMMATE_NAME}} (Phase {{N}})
 | TDD for backend               | `backend-development:tdd-orchestrator`                    |
 | FastAPI implementation         | `python-development:fastapi-pro`                          |
 | Django implementation          | `python-development:django-pro`                           |
-| Express/Node.js backend        | `javascript-typescript:nodejs-backend-patterns`           |
+| Express/Node.js backend        | `javascript-typescript:javascript-pro`                    |
 | Go backend                     | `systems-programming:golang-pro`                          |
 | React/Next.js frontend         | `frontend-mobile-development:frontend-developer`          |
 | Mobile (RN/Flutter)            | `frontend-mobile-development:mobile-developer`            |
@@ -1508,7 +1508,7 @@ Teammate: {{TEAMMATE_NAME}} (Phase {{N}})
 | Backend API security           | `backend-api-security:backend-security-coder`             |
 | Frontend security              | `frontend-mobile-security:frontend-security-coder`        |
 | Database optimization          | `database-cloud-optimization:database-optimizer`          |
-| PostgreSQL schema design       | `database-design:postgresql`                              |
+| PostgreSQL schema design       | `database-design:sql-pro`                                 |
 | Performance/load testing       | `full-stack-orchestration:performance-engineer`           |
 | Deployment hardening           | `deployment-strategies:deployment-engineer`                |
 | Kubernetes architecture        | `kubernetes-operations:kubernetes-architect`               |
