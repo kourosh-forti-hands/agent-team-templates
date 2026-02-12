@@ -1,50 +1,73 @@
-# Agent Team Execution Templates
+# Claude Code Execution Templates
 
-Parameterized templates for orchestrating [Claude Code](https://docs.anthropic.com/en/docs/claude-code) agent teams to build software projects end-to-end — from research and technology selection through implementation, deployment, and validation.
+Parameterized templates for orchestrating [Claude Code](https://docs.anthropic.com/en/docs/claude-code) to build software projects end-to-end — from research and technology selection through implementation, deployment, and validation.
 
-## What's in this repo
+Two execution models, each with its own template and population guide:
+
+## Execution Models
+
+### Agent Team (`agent-team/`)
+
+Uses Claude Code's native agent team features (`TeamCreate`, `TaskCreate`, `SendMessage`) as the primary execution model. Multiple agents work concurrently with task-based dependency resolution.
 
 | File | Purpose |
 |------|---------|
-| [`AGENT_TEAM_TEMPLATE.md`](AGENT_TEAM_TEMPLATE.md) | The core template. A parameterized execution guide with `{{PLACEHOLDER}}` fields that get populated for your specific project. Defines phases (Bootstrap, Assessment, Foundation, Features, Deployment, Validation) and three team topologies (solo, squad, swarm). |
-| [`AGENT_TEAM_POPULATE_GUIDE.md`](AGENT_TEAM_POPULATE_GUIDE.md) | The interview prompt. Paste it into Claude Code and it runs a structured 7-round interview to populate the template — asking about your project identity, tech stack, architecture, features, team topology, success criteria, and phase details. Includes prerequisites and setup instructions. |
-| [`RALPH_LOOP_TEMPLATE.md`](RALPH_LOOP_TEMPLATE.md) | The original loop-based template that inspired this project. Included as a reference for the alternative execution model (iterative loops with promise-based completion detection). |
+| [`agent-team/AGENT_TEAM_TEMPLATE.md`](agent-team/AGENT_TEAM_TEMPLATE.md) | The core template. Parameterized with `{{PLACEHOLDER}}` fields. Defines phases (Bootstrap, Assessment, Foundation, Features, Deployment, Validation) and three team topologies (solo, squad, swarm). |
+| [`agent-team/AGENT_TEAM_POPULATE_GUIDE.md`](agent-team/AGENT_TEAM_POPULATE_GUIDE.md) | The interview prompt. 7-round interview to populate the template. Includes prerequisites and setup instructions. |
 
-## Quick start
-
-1. Clone or download this repo into your project root
+**Quick start:**
+1. Copy `agent-team/AGENT_TEAM_TEMPLATE.md` and `agent-team/AGENT_TEAM_POPULATE_GUIDE.md` to your project root
 2. Open Claude Code in your project directory
-3. Copy the **Kickoff Prompt** from `AGENT_TEAM_POPULATE_GUIDE.md` (everything between the `---START---` and `---END---` markers)
-4. Paste it into Claude Code
-5. Answer the 7 rounds of questions
-6. Claude Code produces a populated `AGENT_TEAM_EXECUTION_GUIDE.md` tailored to your project
+3. Copy the **Kickoff Prompt** from the populate guide (between `---START---` and `---END---`)
+4. Paste it into Claude Code and answer 7 rounds of questions
+5. Claude Code produces a populated `AGENT_TEAM_EXECUTION_GUIDE.md`
 
-See the [Prerequisites section](AGENT_TEAM_POPULATE_GUIDE.md#prerequisites) in the populate guide for detailed setup instructions, including optional MCP servers and skills that enhance capabilities.
+**Three topologies:**
+- **Solo** — Sequential `Task()` calls. Cheapest, simplest.
+- **Squad** — One persistent team for the project. Tasks with dependencies.
+- **Swarm** — Per-wave teams. Maximum parallelism.
 
-## Team topologies
+### Ralph Loop (`ralph-loop/`)
 
-The template supports three execution strategies:
+Uses the `ralph-loop` skill for iterative, loop-driven execution with `<promise>` tags for completion detection. A single agent iterates within each phase, with optional team support for parallel waves.
 
-- **Solo** — No teams. The lead spawns sequential `Task()` calls for each phase. Cheapest, simplest. Best for small projects.
-- **Squad** — One persistent team for the entire project. All tasks created upfront with dependencies. Teammates spawned as tasks become unblocked.
-- **Swarm** — Per-wave teams with full isolation. Teams created and destroyed per wave. Maximum parallelism and throughput.
+| File | Purpose |
+|------|---------|
+| [`ralph-loop/RALPH_LOOP_TEMPLATE.md`](ralph-loop/RALPH_LOOP_TEMPLATE.md) | The core template. Parameterized with `{{PLACEHOLDER}}` fields. Defines phases with `/ralph-loop:ralph-loop` commands, promise-based completion, and three execution modes (sequential, team, hybrid). |
+| [`ralph-loop/RALPH_LOOP_POPULATE_GUIDE.md`](ralph-loop/RALPH_LOOP_POPULATE_GUIDE.md) | The interview prompt. 6-round interview to populate the template. Includes prerequisites and setup instructions. |
 
-## Key concepts
+**Quick start:**
+1. Copy `ralph-loop/RALPH_LOOP_TEMPLATE.md` and `ralph-loop/RALPH_LOOP_POPULATE_GUIDE.md` to your project root
+2. Open Claude Code in your project directory
+3. Copy the **Kickoff Prompt** from the populate guide (between `---START---` and `---END---`)
+4. Paste it into Claude Code and answer 6 rounds of questions
+5. Claude Code produces a populated `RALPH_LOOP_EXECUTION_GUIDE.md`
 
-- **Tasks replace promises** — Instead of loop-based `<promise>` tags, phases complete via `TaskUpdate(status="completed")` with built-in dependency resolution.
-- **Planning files as ground truth** — `task_plan.md`, `findings.md`, and `progress.md` persist across context windows, sessions, and teammate lifecycles. They are the durable state layer that survives ephemeral team operations.
-- **Research as a first-class input** — Any field in the template can be marked `research: "..."` instead of `value: "..."`, deferring the decision to Phase 1 where research teammates investigate and the user confirms.
-- **File ownership for parallel safety** — When teammates work in parallel, each phase explicitly defines which files it owns (exclusive edit) and which it reads (shared, no edit).
+**Three execution modes:**
+- **Sequential** — One ralph-loop at a time. User reviews between phases.
+- **Team** — Parallel waves of teammates, each running their own ralph-loop.
+- **Hybrid** — Sequential for dependent phases, parallel for independent ones.
 
-## How it compares to the loop-based approach
+## How the Two Models Compare
 
-| Loop-Based (RALPH_LOOP_TEMPLATE) | Team-Based (AGENT_TEAM_TEMPLATE) |
-|---|---|
-| Single agent iterates in a loop | Multiple agents work concurrently |
-| `<promise>` tags signal completion | `TaskUpdate(completed)` signals completion |
-| Loop counter limits iterations | Task dependencies limit ordering |
-| `/ralph-loop:ralph-loop "..."` | `TeamCreate` / `TaskCreate` / `Task(...)` |
-| Teams are an optional add-on | Teams are the primary execution model |
+| | Ralph Loop | Agent Team |
+|---|---|---|
+| **Execution unit** | Single agent iterates in a loop | Multiple agents work concurrently |
+| **Completion signal** | `<promise>` tags detected by the loop | `TaskUpdate(status="completed")` |
+| **Iteration control** | `--max-iterations` per phase | Task dependencies limit ordering |
+| **User control** | Review between each loop invocation | Review at topology level (solo/squad/swarm) |
+| **Invocation** | `/ralph-loop:ralph-loop "..."` | `TeamCreate` / `TaskCreate` / `Task(...)` |
+| **Team support** | Optional add-on (team/hybrid mode) | Primary execution model |
+| **Best for** | Maximum user control, smaller projects, existing ralph-loop users | Maximum throughput, larger projects, native Claude Code workflows |
+
+## Shared Concepts
+
+Both models share these ideas:
+- **Planning files** — `task_plan.md`, `findings.md`, `progress.md` persist state across phases
+- **Research as input** — Any field accepts `research: "..."` to defer decisions to Phase 1
+- **Memory MCP** — `Decision_` entities store resolved research across sessions
+- **Agent selection** — Both templates include guides for choosing specialized subagent types
+- **Phased execution** — Bootstrap → Assessment → Foundation → Features → Deployment → Validation
 
 ## License
 
