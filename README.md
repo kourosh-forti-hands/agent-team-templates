@@ -12,7 +12,7 @@ Uses Claude Code's native agent team features (`TeamCreate`, `TaskCreate`, `Send
 
 | File | Purpose |
 |------|---------|
-| [`agent-team/AGENT_TEAM_TEMPLATE.md`](agent-team/AGENT_TEAM_TEMPLATE.md) | The core template. Parameterized with `{{PLACEHOLDER}}` fields. Defines phases (Bootstrap, Assessment, Foundation, Features, Deployment, Validation) and three team topologies (solo, squad, swarm). |
+| [`agent-team/AGENT_TEAM_TEMPLATE.md`](agent-team/AGENT_TEAM_TEMPLATE.md) | The core template. Parameterized with `{{PLACEHOLDER}}` fields. Defines phases (Bootstrap, Assessment, Foundation, Features, Client Integration, Deployment, Validation) and three team topologies (solo, squad, swarm). |
 | [`agent-team/AGENT_TEAM_POPULATE_GUIDE.md`](agent-team/AGENT_TEAM_POPULATE_GUIDE.md) | The interview prompt. 7-round interview to populate the template. Includes prerequisites and setup instructions. |
 
 **Quick start:**
