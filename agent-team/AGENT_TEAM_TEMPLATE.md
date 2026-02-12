@@ -766,12 +766,21 @@ TaskCreate(
 )
 TaskUpdate(taskId="phase5_id", addBlockedBy=["phase2_id"])
 
+{{IF_CLIENT_INTEGRATION}}
+TaskCreate(
+  subject="Phase Y: Client Integration",
+  description="Connect client to real backend APIs, replace all mock data",
+  activeForm="Integrating client"
+)
+TaskUpdate(taskId="phaseY_id", addBlockedBy=["phase3_id", "phase4_id", "phase5_id"])
+{{/IF_CLIENT_INTEGRATION}}
+
 TaskCreate(
   subject="Phase D: Deployment & Hardening",
   description="Production deployment, SSL, secrets, monitoring",
   activeForm="Hardening deployment"
 )
-TaskUpdate(taskId="phaseD_id", addBlockedBy=["phase3_id", "phase4_id", "phase5_id"])
+TaskUpdate(taskId="phaseD_id", addBlockedBy=[{{IF_CLIENT_INTEGRATION}}"phaseY_id"{{/IF_CLIENT_INTEGRATION}}{{IF_NO_CLIENT}}"phase3_id", "phase4_id", "phase5_id"{{/IF_NO_CLIENT}}])
 
 TaskCreate(
   subject="Phase F: Testing & Validation",
@@ -983,7 +992,7 @@ FOR EACH SERVICE ({{SERVICES_LIST}} -- or read Decision_services if services wer
 
 6. INTEGRATION:
    - Verify inter-service communication works
-   - Task(subagent_type='unit-testing:test-automator') for integration tests
+   - Task(subagent_type='full-stack-orchestration:test-automator') for integration tests
 
 DONE WHEN: {{PHASE_2_DONE_CRITERIA}}.
 Then: TaskUpdate(status='completed'), SendMessage to lead with summary."
@@ -1271,11 +1280,8 @@ COMPREHENSIVE TESTING:
     - /checkpoint:create 'production-ready'
 
 {{IF_SQUAD_OR_SWARM}}
-CLEANUP:
-    - TaskUpdate(taskId=..., status='completed')
-    - TaskList() — verify ALL tasks across ALL phases are 'completed'
-    - Send shutdown_request to any remaining teammates
-    - TeamDelete()
+NOTE: After this phase returns, the lead handles team cleanup (shutdown_request to
+remaining teammates + TeamDelete). See Squad/Swarm Orchestration Patterns above.
 {{/IF_SQUAD_OR_SWARM}}
 
 DONE WHEN: ALL success criteria checkboxes verified, all tests pass, load tests meet targets, security audit clean, monitoring operational."
@@ -1365,7 +1371,7 @@ Task(
   team_name="{{PROJECT_SLUG}}-hypothesis",
   name="approach-a-investigator",
   prompt="Investigate approach A for {{CRITICAL_FEATURE}}: {{APPROACH_A_DESCRIPTION}}.
-  Research viability, prototype if possible, document trade-offs.
+  Research viability, document trade-offs, store findings in Memory.
   TaskUpdate(completed) + SendMessage to lead when done."
 )
 Task(
@@ -1373,7 +1379,7 @@ Task(
   team_name="{{PROJECT_SLUG}}-hypothesis",
   name="approach-b-investigator",
   prompt="Investigate approach B for {{CRITICAL_FEATURE}}: {{APPROACH_B_DESCRIPTION}}.
-  Research viability, prototype if possible, document trade-offs.
+  Research viability, document trade-offs, store findings in Memory.
   TaskUpdate(completed) + SendMessage to lead when done."
 )
 

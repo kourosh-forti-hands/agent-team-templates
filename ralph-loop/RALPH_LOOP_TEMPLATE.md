@@ -604,7 +604,7 @@ Task(
   team_name='{{PROJECT_SLUG}}-wave-2',
   name='approach-a-investigator',
   prompt='Investigate approach A for {{CRITICAL_FEATURE}}: {{APPROACH_A_DESCRIPTION}}.
-  Research viability, prototype if possible, document trade-offs.
+  Research viability, document trade-offs, store findings in Memory.
   Send findings to team lead when done.'
 )
 Task(
@@ -612,7 +612,7 @@ Task(
   team_name='{{PROJECT_SLUG}}-wave-2',
   name='approach-b-investigator',
   prompt='Investigate approach B for {{CRITICAL_FEATURE}}: {{APPROACH_B_DESCRIPTION}}.
-  Research viability, prototype if possible, document trade-offs.
+  Research viability, document trade-offs, store findings in Memory.
   Send findings to team lead when done.'
 )
 Task(
@@ -680,7 +680,7 @@ FOR EACH SERVICE ({{SERVICES_LIST}} -- or read Decision_services if services wer
 6. INTEGRATION:
    - Verify inter-service communication works
    - Test with mcp__fetch__fetch on health endpoints
-   - Task(subagent_type='unit-testing:test-automator') for integration tests
+   - Task(subagent_type='full-stack-orchestration:test-automator') for integration tests
 
 Output <promise>{{PHASE_2_PROMISE}}</promise> when {{PHASE_2_DONE_CRITERIA}}." --max-iterations {{PHASE_2_MAX_ITER}} --completion-promise "{{PHASE_2_PROMISE}}"
 ```
